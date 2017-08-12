@@ -25,7 +25,10 @@ class SwitchRequestor:
                     data[str(index)] = False
 
             session = requests.session()
-            response = session.post(self.url, json=data)
-            print()
-            print("response: " + str(response))
-            print("body: " + response.json())
+            try:
+                response = session.post(self.url, json=data)
+                print()
+                print("response: " + str(response))
+                print("body: " + response.json())
+            except Exception as ex:
+                print("Error while sending post request: " + str(ex))
