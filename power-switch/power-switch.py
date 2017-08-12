@@ -66,7 +66,6 @@ if __name__ == '__main__':
     debug_log = dict()
     display = displayRenderer.DisplayRenderer(debug_log)
     fullscreen = False
-    menu_page = format_main_menu(switch_states)
     display.open(fullscreen)
     inputs = inputReader.InputReader(debug_log)
     inputs.setup_pins()
@@ -75,6 +74,7 @@ if __name__ == '__main__':
     requestor.login()
     while True:
         time.sleep(0.01)
+        menu_page = format_main_menu(switch_states)
         display.render_menu(menu_page)
         input_value = check_for_input()
         if input_value == "1":
@@ -93,7 +93,7 @@ if __name__ == '__main__':
         elif input_value == "exit":
             requestor.logout()
             terminate()
-        di_state = inputs.read_input()
+        di_state = inputs.input_state
         if di_state != di_state_old:
             di_state_old = di_state
             switch_states[0] = di_state

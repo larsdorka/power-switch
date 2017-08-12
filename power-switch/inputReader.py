@@ -32,8 +32,3 @@ class InputReader:
             GPIO.output(self.output_channel, GPIO.HIGH)
         elif self.input_state is False:
             GPIO.output(self.output_channel, GPIO.LOW)
-
-    def read_input(self):
-        """"""
-        input_data = GPIO.input(self.input_channel) == GPIO.HIGH
-        return input_data
