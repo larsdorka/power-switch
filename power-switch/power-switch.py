@@ -61,12 +61,11 @@ def format_main_menu(switch_states):
 if __name__ == '__main__':
     pygame.init()
     switch_states = [False] * 4
-    input_states = [False] * 4
+    di_state = False
+    di_state_old = False
     debug_log = dict()
     display = displayRenderer.DisplayRenderer(debug_log)
     fullscreen = False
-    show_menu = True
-    menu_select = 0
     menu_page = format_main_menu(switch_states)
     display.open(fullscreen)
     inputs = inputReader.InputReader(debug_log)
@@ -76,28 +75,27 @@ if __name__ == '__main__':
     requestor.login()
     while True:
         time.sleep(0.01)
+        display.render_menu(menu_page)
         input_value = check_for_input()
-        if show_menu:
-            if menu_select == 0:
-                if input_value == "1":
-                    switch_states[0] = not switch_states[0]
-                    requestor.toggle_switches(switch_states, 0)
-                    menu_page = format_main_menu(switch_states)
-                elif input_value == "2":
-                    switch_states[1] = not switch_states[1]
-                    requestor.toggle_switches(switch_states, 1)
-                    menu_page = format_main_menu(switch_states)
-                elif input_value == "3":
-                    switch_states[2] = not switch_states[2]
-                    requestor.toggle_switches(switch_states, 2)
-                    menu_page = format_main_menu(switch_states)
-                elif input_value == "4":
-                    switch_states[3] = not switch_states[3]
-                    requestor.toggle_switches(switch_states, 3)
-                    menu_page = format_main_menu(switch_states)
-                elif input_value == "exit":
-                    requestor.logout()
-                    terminate()
-            display.render_menu(menu_page)
-        # input_states = inputs.read_inputs()
+        if input_value == "1":
+            # switch_states[0] = not switch_states[0]
+            # requestor.toggle_switches(switch_states, 0)
+            pass
+        elif input_value == "2":
+            switch_states[1] = not switch_states[1]
+            requestor.toggle_switches(switch_states, 1)
+        elif input_value == "3":
+            switch_states[2] = not switch_states[2]
+            requestor.toggle_switches(switch_states, 2)
+        elif input_value == "4":
+            switch_states[3] = not switch_states[3]
+            requestor.toggle_switches(switch_states, 3)
+        elif input_value == "exit":
+            requestor.logout()
+            terminate()
+        di_state = inputs.read_input()
+        if di_state != di_state_old:
+            di_state_old = di_state
+            switch_states[0] = di_state
+            requestor.toggle_switches(switch_states, 0)
         display.update()
