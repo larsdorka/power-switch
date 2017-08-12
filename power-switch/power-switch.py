@@ -4,6 +4,7 @@ import time
 from pygame.locals import *
 
 import displayRenderer
+import switchRequestor
 
 MENU_STRUCTURE = [
     ["main menu",
@@ -42,46 +43,53 @@ def check_for_input():
     return result
 
 
-def format_main_menu(set_fullscreen):
+def format_main_menu(switch_states):
     menu = list()
     menu.append(MENU_STRUCTURE[0][0])
     menu.append(MENU_STRUCTURE[0][1])
-    menu.append(MENU_STRUCTURE[0][2].format(str(True)))
-    menu.append(MENU_STRUCTURE[0][3].format(str(True)))
-    menu.append(MENU_STRUCTURE[0][4].format(str(True)))
-    menu.append(MENU_STRUCTURE[0][5].format(str(True)))
-    menu.append(MENU_STRUCTURE[0][4])
-    menu.append(MENU_STRUCTURE[0][5])
+    menu.append(MENU_STRUCTURE[0][2].format(str(switch_states[0])))
+    menu.append(MENU_STRUCTURE[0][3].format(str(switch_states[1])))
+    menu.append(MENU_STRUCTURE[0][4].format(str(switch_states[2])))
+    menu.append(MENU_STRUCTURE[0][5].format(str(switch_states[3])))
+    menu.append(MENU_STRUCTURE[0][6])
+    menu.append(MENU_STRUCTURE[0][7])
     return menu
 
 
 # main application loop
 if __name__ == '__main__':
     pygame.init()
+    switch_states = [False] * 4
     debug_log = dict()
     display = displayRenderer.DisplayRenderer(debug_log)
     fullscreen = False
     show_menu = True
     menu_select = 0
-    menu_page = format_main_menu(True)
+    menu_page = format_main_menu(switch_states)
     display.open(fullscreen)
+    requestor = switchRequestor.SwitchRequestor()
+    requestor.open("http://127.0.0.1/api")
     while True:
-        time.sleep(0.1)
+        time.sleep(0.01)
         input_value = check_for_input()
         if show_menu:
             if menu_select == 0:
                 if input_value == "1":
-                    # toggle outlet 1
-                    menu_page = format_main_menu(True)
+                    switch_states[0] = not switch_states[0]
+                    requestor.toggle_switches(switch_states)
+                    menu_page = format_main_menu(switch_states)
                 elif input_value == "2":
-                    # toggle outlet 2
-                    menu_page = format_main_menu(True)
+                    switch_states[1] = not switch_states[1]
+                    requestor.toggle_switches(switch_states)
+                    menu_page = format_main_menu(switch_states)
                 elif input_value == "3":
-                    # toggle outlet 3
-                    menu_page = format_main_menu(True)
+                    switch_states[2] = not switch_states[2]
+                    requestor.toggle_switches(switch_states)
+                    menu_page = format_main_menu(switch_states)
                 elif input_value == "4":
-                    # toggle outlet 4
-                    menu_page = format_main_menu(True)
+                    switch_states[3] = not switch_states[3]
+                    requestor.toggle_switches(switch_states)
+                    menu_page = format_main_menu(switch_states)
                 elif input_value == "exit":
                     terminate()
             display.render_menu(menu_page)
