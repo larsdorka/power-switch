@@ -1,9 +1,9 @@
 class InputReader:
     """"""
 
-    def __init__(self):
+    def __init__(self, debug_log=dict()):
         """"""
-        pass
+        self.debug_log = debug_log
 
     def open(self):
         """"""

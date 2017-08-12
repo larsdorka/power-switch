@@ -4,31 +4,47 @@ import requests
 class SwitchRequestor:
     """"""
 
-    def __init__(self):
+    def __init__(self, debug_log=dict()):
         """"""
-        self.user = ""
-        self.password = ""
+        self.debug_log = debug_log
+        self.debug_log['requestor_data'] = ""
+        self.debug_log['requestor_response'] = ""
+        self.debug_log['requestor_error'] = ""
         self.url = ""
+        self.password = ""
+        self.session = None
 
-    def open(self, url):
+    def open(self, url, password):
         """"""
         self.url = url
+        self.password = password
+        self.session = requests.session()
 
-    def toggle_switches(self, switch_states=list()):
+    def login(self):
+        """"""
+        response = self.session.post(self.url + "/login.html", data={'pw': self.password})
+
+    def logout(self):
+        """"""
+        response = self.session.get(self.url + "/login.html")
+
+    def toggle_switches(self, switch_states=list(), outlet=0):
         """"""
         if len(switch_states) >= 4:
             data = dict()
             for index in range(4):
-                if switch_states[index]:
-                    data[str(index)] = True
+                if index == outlet:
+                    if switch_states[index]:
+                        data['cte' + str(index + 1)] = "1"
+                    else:
+                        data['cte' + str(index + 1)] = "0"
                 else:
-                    data[str(index)] = False
+                    data['cte' + str(index + 1)] = ""
+            self.debug_log['requestor_data'] = str(data)
 
-            session = requests.session()
             try:
-                response = session.post(self.url, json=data)
-                print()
-                print("response: " + str(response))
-                print("body: " + response.json())
+                response = self.session.post(self.url, data=data)
+                self.debug_log['requestor_response'] = str(response)
+                self.debug_log['requestor_error'] = ""
             except Exception as ex:
-                print("Error while sending post request: " + str(ex))
+                self.debug_log['requestor_error'] = str(ex)
