@@ -5,6 +5,7 @@ from pygame.locals import *
 
 import displayRenderer
 import switchRequestor
+import inputReader
 
 MENU_STRUCTURE = [
     ["main menu",
@@ -60,6 +61,7 @@ def format_main_menu(switch_states):
 if __name__ == '__main__':
     pygame.init()
     switch_states = [False] * 4
+    input_states = [False] * 4
     debug_log = dict()
     display = displayRenderer.DisplayRenderer(debug_log)
     fullscreen = False
@@ -67,6 +69,8 @@ if __name__ == '__main__':
     menu_select = 0
     menu_page = format_main_menu(switch_states)
     display.open(fullscreen)
+    inputs = inputReader.InputReader()
+    inputs.open()
     requestor = switchRequestor.SwitchRequestor()
     requestor.open("http://127.0.0.1/api")
     while True:
@@ -93,4 +97,5 @@ if __name__ == '__main__':
                 elif input_value == "exit":
                     terminate()
             display.render_menu(menu_page)
+        input_states = inputs.read_inputs()
         display.update()
